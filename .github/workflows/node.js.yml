@@ -21,11 +21,25 @@ jobs:
 
     steps:
     - uses: actions/checkout@v2
+    
+    - name: Cache pnpm modules
+      uses: actions/cache@v2
+      with:
+        path: ~/.pnpm-store
+        key: ${{ runner.os }}-${{ hashFiles('**/pnpm-lock.yaml') }}
+        restore-keys: |
+          ${{ runner.os }}-
+
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v2
       with:
         node-version: ${{ matrix.node-version }}
-        cache: 'npm'
-    - run: npm ci
-    - run: npm run lint
-    - run: npm test
+
+    - name: Setup pnpm
+      uses: pnpm/action-setup@v2
+      with:
+        version: 6
+        run_install: true
+        
+    - run: pnpm run lint
+    - run: pnpm test
