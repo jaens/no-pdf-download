@@ -2,6 +2,8 @@
     "name": "no-pdf-download",
     "type": "module",
     "scripts": {
+        "build": "web-ext build --overwrite-dest",
+        "sign": "web-ext sign --api-key=$AMO_JWT_ISSUER --api-secret=$AMO_JWT_SECRET",
         "lint": "tsc -p jsconfig.json --noEmit && web-ext lint",
         "test": "mocha"
     },
