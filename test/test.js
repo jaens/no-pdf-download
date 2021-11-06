@@ -1,7 +1,7 @@
 "use strict";
 
-import * as headers from "../app/src/headers.js";
 import { deepStrictEqual } from "assert";
+import * as headers from "../app/src/headers.js";
 
 describe("Handle Headers", () => {
     testHandleHeaders("Empty", "", [], false);
@@ -158,6 +158,18 @@ describe("Handle Headers", () => {
         ],
         [
             ["Content-Disposition", "inline; filename=\"ABC_2019.pdf\"; filename*=UTF-8''ABC_2019.pdf"],
+            ["Content-Type", "application/pdf"],
+        ]
+    );
+    testHandleHeaders(
+        "Amazon S3 without content type with PDF file name(s)",
+        "http://some-bucket.s3.us-east-1.amazonaws.com/12345.pdf?response-content-disposition=attachment",
+        [
+            ["Content-Disposition", "attachment"],
+            ["Content-Type", ""],
+        ],
+        [
+            ["Content-Disposition", "inline"],
             ["Content-Type", "application/pdf"],
         ]
     );
