@@ -1,9 +1,0 @@
-{
-  "scripts": {
-    "test": "mocha"
-  },
-  "devDependencies": {
-    "assert": "^2.0.0",
-    "mocha": "^6.1.4"
-  }
-}
