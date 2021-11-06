@@ -1,0 +1,10 @@
+{
+    "compilerOptions": {
+        "module": "ES2020",
+        "target": "ES2020",
+        "checkJs": true,
+        "strict": true
+    },
+    "include": ["app/src/**/*", "test/**/*"],
+    "exclude": ["node_modules", "**/node_modules/*"]
+}
