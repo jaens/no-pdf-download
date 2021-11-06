@@ -14,7 +14,13 @@ const PDF_MIME_TYPES = new Set([
     "application/acrobat",
     "applications/vnd.pdf",
 ]);
-const BINARY_MIME_TYPES = new Set(["application/octet-stream", "application/force-download", "binary/octet-stream"]);
+const BINARY_MIME_TYPES = new Set([
+    "application/octet-stream",
+    "application/force-download",
+    "binary/octet-stream",
+    // S3 buckets might have files without Content-type set
+    "",
+]);
 const HEADER_CONTENT_DISPOSITION = "Content-Disposition";
 const HEADER_CONTENT_TYPE = "Content-Type";
 
