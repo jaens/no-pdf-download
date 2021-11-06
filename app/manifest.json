@@ -1,9 +1,12 @@
 {
     "manifest_version": 2,
-
-    "name": "No PDF Download ⚡ Improved",
-    "description": "Opens all PDF files directly in the browser.",
     "version": "2.0.0",
+
+    "name": "No PDF Download - Always View ⚡ Improved",
+    "short_name": "No PDF Download",
+    "description": "Opens all PDF files directly in the browser instead of downloading them. Fork of the original 'No PDF Download' extension.",
+    "author": "Jaen",
+    "homepage_url": "https://github.com/jaens/no-download-pdf",
 
     "permissions": ["webRequest", "webRequestBlocking", "<all_urls>"],
 
@@ -17,6 +20,7 @@
 
     "applications": {
         "gecko": {
+            "id": "no-pdf-download@github.com",
             "strict_min_version": "67.0"
         }
     }

@@ -182,7 +182,21 @@ function testHandleHeaders(name, url, requestHeaders, expectedHeaders) {
 
     // Get new headers
     const headersArray = makeHeaderArray(requestHeaders);
-    const newHeaders = headers.handleHeaders(url, headersArray) ?? headersArray;
+    /** @type {chrome.webRequest.WebResponseHeadersDetails} */
+    const details = {
+        responseHeaders: headersArray,
+        url,
+        method: "GET",
+        statusLine: "",
+        statusCode: 0,
+        requestId: "123",
+        frameId: 0,
+        parentFrameId: 0,
+        tabId: 0,
+        type: "main_frame",
+        timeStamp: 0,
+    };
+    const newHeaders = headers.handleHeaders(details) ?? headersArray;
     newHeaders.sort(cmpHeaders);
 
     // Test

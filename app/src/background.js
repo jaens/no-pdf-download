@@ -2,8 +2,8 @@
 
 import { handleHeaders } from "./headers.js";
 
-// For Chrome we have to use "extraHeaders" to get all headers
 const extraInfoSpec = ["responseHeaders", "blocking"];
+// For Chrome we have to use "extraHeaders" to get all headers
 if (
     // @ts-ignore OnBeforeSendHeadersOptions is not exported
     chrome.webRequest.OnBeforeSendHeadersOptions.hasOwnProperty("EXTRA_HEADERS")
@@ -14,11 +14,7 @@ if (
 // Register receiver for reponse headers
 chrome.webRequest.onHeadersReceived.addListener(
     (details) => {
-        const responseHeaders = handleHeaders(
-            details.url,
-            // @ts-ignore not nullable
-            details.responseHeaders
-        );
+        const responseHeaders = handleHeaders(details);
         if (responseHeaders != null) {
             return { responseHeaders };
         }
