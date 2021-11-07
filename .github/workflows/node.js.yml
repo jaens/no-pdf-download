@@ -1,12 +1,13 @@
 # This workflow will do a clean install of node dependencies, cache/restore them, build the source code and run tests
 
-name: Continuous Integration
+name: tests
+
+permissions:
+    contents: read
 
 on:
   push:
-    branches: [ main ]
   pull_request:
-    branches: [ main ]
 
 jobs:
   build:
