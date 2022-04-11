@@ -2,6 +2,8 @@
 
 # No PDF Download
 
+**No PDF Download** is a Web Extension for Firefox, available here: https://addons.mozilla.org/firefox/addon/no-pdf-download-improved/
+
 While most PDF files can be viewed directly in the browser, some PDFs will trigger a "Save as"-dialog or will be downloaded automatically. This addon views all PDF files directly in the browser. You can still save the PDF by pressing Ctrl+S (or Cmd+S) after viewing them.
 
 Some web servers are misconfigured and do not tell the browser that a file is a PDF. In this case the file will still be downloaded even when this addon is active.
