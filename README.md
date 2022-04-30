@@ -11,3 +11,13 @@ Some web servers are misconfigured and do not tell the browser that a file is a 
 # Development
 
 This repository is https://github.com/jaens/no-pdf-download/, a fork of https://github.com/MorbZ/no-pdf-download.
+
+# Changes from original
+
+-   Properly support more sites:
+    -   Dropbox
+    -   Amazon cloud
+    -   various universities
+-   Allow forcing downloads and disabling the extension by clicking on the browser action icon.
+-   Development:
+    -   Add type definitions & linting.
