@@ -16,6 +16,8 @@ const BINARY_MIME_TYPES = new Set([
     "application/octet-stream",
     "application/force-download",
     "binary/octet-stream",
+    // Dropbox
+    "application/binary",
     // S3 buckets might have files without Content-type set
     "",
 ]);
@@ -107,7 +109,11 @@ function isPdf(url, type, disposition) {
 
     // Octet-streams may be PDFs, we have to check the extension
     if (!BINARY_MIME_TYPES.has(mimeType)) {
-        return false;
+        const p = mimeType.split("/");
+        // Only skip valid MIME types, otherwise fall back to extension
+        if (p.length === 2 && p[0] !== "" && p[1] !== "") {
+            return false;
+        }
     }
 
     if (disposition != null) {

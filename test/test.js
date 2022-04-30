@@ -189,6 +189,32 @@ describe("Handle Headers", () => {
             ]
         );
     });
+    it("Incomplete content type", () => {
+        testHandleHeaders(
+            "http://quod.lib.umich.edu/cgi/p/pod/dod-idx/some.pdf",
+            [
+                ["Content-Disposition", "attachment"],
+                ["Content-Type", "application/; charset=ISO-8859-1"],
+            ],
+            [
+                ["Content-Disposition", "inline"],
+                ["Content-Type", "application/pdf; charset=ISO-8859-1"],
+            ]
+        );
+    });
+    it("Dropbox", () => {
+        testHandleHeaders(
+            "/cd/0/get/xxx-yyy-zzz/file?dl=1",
+            [
+                ["Content-Disposition", `attachment; filename="thesis.pdf"; filename*=UTF-8''thesis.pdf`],
+                ["Content-Type", "application/binary"],
+            ],
+            [
+                ["Content-Disposition", `inline; filename="thesis.pdf"; filename*=UTF-8''thesis.pdf`],
+                ["Content-Type", "application/pdf"],
+            ]
+        );
+    });
 });
 
 /* Helper Functions */
