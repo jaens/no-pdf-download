@@ -1,5 +1,10 @@
 import { debugLog } from "./util.js";
 
+/** @typedef {"inline" | "attachment" | "disabled"} Mode */
+
+/** @type {Mode[]} */
+export const allModes = ["inline", "attachment", "disabled"];
+
 const PDF_EXTENSION = ".pdf";
 const PDF_MIME_TYPE = "application/pdf";
 const PDF_MIME_TYPES = new Set([
@@ -43,9 +48,14 @@ function isGoogleRequest(details) {
 
 /**
  * @param {chrome.webRequest.WebResponseHeadersDetails} details
+ * @param {Mode} mode
  * @returns {ChromeHeaders | null}
  */
-export function handleHeaders(details) {
+export function handleHeaders(details, mode = "inline") {
+    if (mode === "disabled") {
+        return null;
+    }
+
     const headers = details.responseHeaders;
     if (headers == null) {
         return null;
@@ -72,7 +82,7 @@ export function handleHeaders(details) {
         const initialType = type.value;
         const initialDisposition = disposition?.value;
 
-        changeHeaders(headers, type, disposition);
+        changeHeaders(headers, type, disposition, mode);
 
         console.debug(
             "Changed %o\nfor URL %s",
@@ -150,10 +160,14 @@ function getDispositionFilename(disposition) {
  * @param {ChromeHeaders} headers
  * @param {Header} type
  * @param {Header | null} disposition
+ * @param {"inline" | "attachment"} mode
  */
-function changeHeaders(headers, type, disposition) {
+function changeHeaders(headers, type, disposition, mode) {
+    const mimeType = mode === "inline" ? PDF_MIME_TYPE : "application/octet-stream";
     // Normalize PDF mime type
-    headers[type.idx].value = replaceFirstHeaderField(type.value, PDF_MIME_TYPE);
+    headers[type.idx].value = replaceFirstHeaderField(type.value, mimeType);
+
+    const newDisposition = mode;
 
     // Remove attachment header. Also make sure to always add an inline header.
     // This is needed to prevent downloading if the HTML5 "download" tag is set.
@@ -162,10 +176,10 @@ function changeHeaders(headers, type, disposition) {
     if (disposition == null) {
         headers.push({
             name: HEADER_CONTENT_DISPOSITION,
-            value: "inline",
+            value: newDisposition,
         });
     } else {
-        headers[disposition.idx].value = replaceFirstHeaderField(disposition.value, "inline");
+        headers[disposition.idx].value = replaceFirstHeaderField(disposition.value, newDisposition);
     }
 }
 

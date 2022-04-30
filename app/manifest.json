@@ -8,7 +8,7 @@
     "author": "Jaen",
     "homepage_url": "https://github.com/jaens/no-pdf-download",
 
-    "permissions": ["webRequest", "webRequestBlocking", "<all_urls>"],
+    "permissions": ["storage", "webRequest", "webRequestBlocking", "<all_urls>"],
 
     "background": {
         "page": "/background.html"
@@ -16,6 +16,13 @@
 
     "icons": {
         "128": "icon_128.png"
+    },
+
+    "browser_action": {
+        "default_icon": {
+            "128": "icon_128.png"
+        },
+        "default_title": "No PDF Download"
     },
 
     "applications": {
