@@ -130,6 +130,19 @@ describe("Handle Headers", () => {
             ]
         );
     });
+    it("Octet-stream with PDF file name and extra disposition whitespace", () => {
+        testHandleHeaders(
+            "",
+            [
+                ["Content-Type", "application/octet-stream"],
+                ["Content-Disposition", 'attachment;  filename = "test.pdf"'],
+            ],
+            [
+                ["Content-Type", "application/pdf"],
+                ["Content-Disposition", 'inline;  filename = "test.pdf"'],
+            ]
+        );
+    });
     it("Octet-stream with PDF file name and invalid", () => {
         testHandleHeaders(
             "",

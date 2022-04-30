@@ -138,8 +138,7 @@ function isPdf(url, type, disposition) {
  */
 function getDispositionFilename(disposition) {
     // Filename may be in quotes, see: https://tools.ietf.org/html/rfc2183
-    // Regex: https://regex101.com/r/NJiElq/5
-    const re = /; ?filename=(?:(?:\"(.*?)\")|([^;"]+))/i;
+    const re = /;[\t ]*filename[\t ]*=[\t ]*(?:(?:\"(.*?)\")|([^;"]+))/i;
     const m = re.exec(disposition);
     if (m == null) {
         return false;
