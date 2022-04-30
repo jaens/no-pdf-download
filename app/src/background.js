@@ -1,5 +1,3 @@
-"use strict";
-
 import { handleHeaders } from "./headers.js";
 
 const extraInfoSpec = ["responseHeaders", "blocking"];

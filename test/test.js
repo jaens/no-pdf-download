@@ -1,5 +1,3 @@
-"use strict";
-
 import { deepStrictEqual } from "assert";
 import * as headers from "../app/src/headers.js";
 

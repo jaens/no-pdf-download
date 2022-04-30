@@ -1,5 +1,3 @@
-"use strict";
-
 import { debugLog } from "./util.js";
 
 const PDF_EXTENSION = ".pdf";
