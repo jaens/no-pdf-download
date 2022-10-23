@@ -176,6 +176,22 @@ describe("Handle Headers", () => {
             ]
         );
     });
+    it("text/html with attachment filename", () => {
+        testHandleHeaders(
+            "http://test.com/test.pdf",
+            [
+                ["Content-Type", "text/html"],
+                ["Content-Disposition", "attachment; filename=test.pdf"],
+            ],
+            [
+                ["Content-Type", "application/pdf"],
+                ["Content-Disposition", "inline; filename=test.pdf"],
+            ]
+        );
+    });
+    it("text/html with just filename", () => {
+        testHandleHeaders("http://test.com/test.pdf", [["Content-Type", "text/html"]], false);
+    });
     it("Application/Force-Download with PDF file name(s)", () => {
         testHandleHeaders(
             "http://test.com/02000",

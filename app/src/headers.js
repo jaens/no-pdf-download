@@ -26,6 +26,8 @@ const BINARY_MIME_TYPES = new Set([
     // S3 buckets might have files without Content-type set
     "",
 ]);
+const GENERIC_MIME_TYPES = new Set(["text/html"]);
+
 const HEADER_CONTENT_DISPOSITION = "Content-Disposition";
 const HEADER_CONTENT_TYPE = "Content-Type";
 
@@ -106,6 +108,14 @@ export function handleHeaders(details, mode = "inline") {
 }
 
 /**
+ * @param {string} mimeType
+ */
+function isValidMimeType(mimeType) {
+    const p = mimeType.split("/");
+    return p.length === 2 && p[0] !== "" && p[1] !== "";
+}
+
+/**
  * @param {string} url
  * @param {string} type
  * @param {string | undefined} disposition
@@ -117,22 +127,22 @@ function isPdf(url, type, disposition) {
         return true;
     }
 
+    const filename = disposition != null && getDispositionFilename(disposition);
+
     // Octet-streams may be PDFs, we have to check the extension
-    if (!BINARY_MIME_TYPES.has(mimeType)) {
-        const p = mimeType.split("/");
-        // Only skip valid MIME types, otherwise fall back to extension
-        if (p.length === 2 && p[0] !== "" && p[1] !== "") {
-            return false;
-        }
+    if (
+        !BINARY_MIME_TYPES.has(mimeType) &&
+        isValidMimeType(mimeType) &&
+        // Some sites send PDF attachments with a MIME type of "text/html", fall
+        // back to detection by extension
+        (filename === false || !GENERIC_MIME_TYPES.has(mimeType))
+    ) {
+        return false;
     }
 
-    if (disposition != null) {
-        // Check content disposition filename
-        const filename = getDispositionFilename(disposition);
-        if (filename !== false) {
-            // Return either way bacause we got the "official" file name
-            return filename.toLowerCase().endsWith(PDF_EXTENSION);
-        }
+    if (filename !== false) {
+        // Return either way bacause we got the "official" file name
+        return filename.toLowerCase().endsWith(PDF_EXTENSION);
     }
 
     // In case there is no disposition file name, we check for URL (without
