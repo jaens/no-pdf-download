@@ -33,6 +33,7 @@ const HEADER_CONTENT_TYPE = "Content-Type";
 
 /** @typedef {chrome.webRequest.HttpHeader[]} ChromeHeaders */
 /** @typedef { {idx: number, value: string } } Header*/
+/** @typedef { {isIframeNavigation: boolean} } RequestInfo */
 
 /**
  * Is the request potentially a Gmail download or Google Docs print request?
@@ -51,9 +52,10 @@ function isGoogleRequest(details) {
 /**
  * @param {chrome.webRequest.WebResponseHeadersDetails} details
  * @param {Mode} mode
+ * @param {RequestInfo | undefined} requestInfo
  * @returns {ChromeHeaders | null}
  */
-export function handleHeaders(details, mode = "inline") {
+export function handleHeaders(details, mode = "inline", requestInfo = undefined) {
     if (mode === "disabled") {
         return null;
     }
@@ -74,10 +76,17 @@ export function handleHeaders(details, mode = "inline") {
     const disposition = getHeader(headers, HEADER_CONTENT_DISPOSITION);
 
     if (isPdf(url, type.value, disposition?.value)) {
-        debugLog("Request details: ", details);
+        debugLog("Response details: ", details);
 
         if (isGoogleRequest(details)) {
             console.debug("Skipping Google request at %s", url);
+            return null;
+        }
+
+        if (requestInfo?.isIframeNavigation) {
+            // Some sites like itch.io use hidden iframes to download files.
+            // Disable inlining for these requests since otherwise it breaks downloads of PDFs.
+            console.debug("Skipping iframe navigation at %s", url);
             return null;
         }
 
@@ -203,7 +212,7 @@ function changeHeaders(headers, type, disposition, mode) {
  * @param {string} name
  * @returns {Header | null}
  */
-function getHeader(headers, name) {
+export function getHeader(headers, name) {
     name = name.toLowerCase();
     for (let i = 0, max = headers.length; i < max; i++) {
         const header = headers[i];
@@ -212,6 +221,21 @@ function getHeader(headers, name) {
         }
     }
     return null;
+}
+
+/**
+ * Converts a list of headers to a map. Last value wins.
+ * @param {ChromeHeaders | undefined} headers
+ * @returns {Map<string, string>}
+ */
+export function chromeHeadersToMap(headers) {
+    const map = new Map();
+    if (headers) {
+        for (const header of headers) {
+            map.set(header.name, header.value);
+        }
+    }
+    return map;
 }
 
 /**

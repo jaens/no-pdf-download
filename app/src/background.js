@@ -1,43 +1,9 @@
-import { allModes, handleHeaders } from "./headers.js";
-
-let currentMode = allModes[0];
-
-/** @type {Record<import("./headers.js").Mode, {title: string, badge: string, color:string}>} */
-const badges = {
-    inline: { title: "Enabled", badge: "", color: "#0A0" },
-    attachment: { title: "Always download", badge: "DL", color: "#A00" },
-    disabled: { title: "Disabled", badge: "X", color: "#888" },
-};
-
-function updateBrowserAction() {
-    const manifest = chrome.runtime.getManifest();
-    const info = badges[currentMode];
-
-    chrome.browserAction.setTitle({
-        title: `${info.title} - ${manifest.short_name}`,
-    });
-    if (chrome.browserAction.setBadgeText) {
-        // Not available on Android
-        chrome.browserAction.setBadgeText({ text: info.badge });
-        chrome.browserAction.setBadgeBackgroundColor({ color: info.color });
-    }
-}
-
-function loadMode() {
-    chrome.storage.local.get("mode", ({ mode }) => {
-        currentMode = allModes.indexOf(mode) !== -1 ? mode : allModes[0];
-        updateBrowserAction();
-    });
-}
-
-function saveMode() {
-    chrome.storage.local.set({ mode: currentMode });
-}
+import { chromeHeadersToMap, handleHeaders } from "./headers.js";
+import { currentMode, initMode, nextMode } from "./mode.js";
+import { debugLog } from "./util.js";
 
 chrome.browserAction.onClicked.addListener(() => {
-    currentMode = allModes[(allModes.indexOf(currentMode) + 1) % allModes.length];
-    updateBrowserAction();
-    saveMode();
+    nextMode();
     console.debug("Browser action clicked", { currentMode });
 });
 
@@ -53,7 +19,8 @@ if (
 // Register receiver for reponse headers
 chrome.webRequest.onHeadersReceived.addListener(
     (details) => {
-        const responseHeaders = handleHeaders(details, currentMode);
+        const savedInfo = getSavedRequestInfo(details.requestId);
+        const responseHeaders = handleHeaders(details, currentMode, savedInfo);
         if (responseHeaders != null) {
             return { responseHeaders };
         }
@@ -65,7 +32,63 @@ chrome.webRequest.onHeadersReceived.addListener(
     extraInfoSpec
 );
 
-updateBrowserAction();
-loadMode();
+/** @typedef { {requestId: string, isIframeNavigation: boolean} } SavedRequestInfo */
+
+/**
+ * Save useful information about requests to use it later in onHeadersReceived.
+ * Limited size ring buffer.
+ *
+ * @type SavedRequestInfo[]
+ */
+const savedRequestInfo = [];
+const MAX_SAVED_INFO = 16;
+let currentSavedInfoIndex = 0;
+
+/**
+ * @param {string} requestId
+ */
+function getSavedRequestInfo(requestId) {
+    return savedRequestInfo.find((info) => info.requestId === requestId);
+}
+
+/**
+ * @param {SavedRequestInfo} info
+ */
+function addSavedRequestInfo(info) {
+    savedRequestInfo[currentSavedInfoIndex] = info;
+    currentSavedInfoIndex = (currentSavedInfoIndex + 1) % MAX_SAVED_INFO;
+}
+
+chrome.webRequest.onBeforeSendHeaders.addListener(
+    (details) => {
+        // TODO: Add tests for this.
+        const { requestId, requestHeaders, type } = details;
+        if (type !== "sub_frame") {
+            return;
+        }
+        const headersMap = chromeHeadersToMap(requestHeaders);
+        const isIframeNavigation =
+            // Currently, the only known cases of breakage are for cross-origin iframes (usually CDN).
+            headersMap.get("Sec-Fetch-Site") === "cross-site" &&
+            headersMap.get("Sec-Fetch-Mode") === "navigate" &&
+            headersMap.get("Sec-Fetch-Dest") === "iframe";
+
+        // Only save details for interesting requests
+        if (isIframeNavigation) {
+            debugLog("Request details: ", details);
+            addSavedRequestInfo({
+                requestId,
+                isIframeNavigation,
+            });
+        }
+    },
+    {
+        types: ["main_frame", "sub_frame"],
+        urls: ["<all_urls>"],
+    },
+    ["requestHeaders"]
+);
+
+initMode();
 
 console.info("No PDF Download extension loaded");
