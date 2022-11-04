@@ -1,6 +1,6 @@
 {
     "manifest_version": 2,
-    "version": "2.1.0",
+    "version": "2.1.1",
 
     "name": "No PDF Download - Improved",
     "short_name": "No PDF Download",
@@ -8,7 +8,7 @@
     "author": "Jaen",
     "homepage_url": "https://github.com/jaens/no-pdf-download",
 
-    "permissions": ["storage", "webRequest", "webRequestBlocking", "<all_urls>"],
+    "permissions": [ "storage", "webRequest", "webRequestBlocking", "<all_urls>" ],
 
     "background": {
         "page": "/background.html"

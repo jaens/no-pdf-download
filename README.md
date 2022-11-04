@@ -15,8 +15,10 @@ This repository is https://github.com/jaens/no-pdf-download/, a fork of https://
 # Changes from original
 
 -   Properly support more sites:
+    -   Google apps
     -   Dropbox
     -   Amazon cloud
+    -   itch.io
     -   various universities
 -   Allow forcing downloads and disabling the extension by clicking on the browser action icon.
 -   Development:
