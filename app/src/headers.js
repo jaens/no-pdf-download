@@ -19,8 +19,15 @@ const PDF_MIME_TYPES = new Set([
 ]);
 const BINARY_MIME_TYPES = new Set([
     "application/octet-stream",
+
+    "application/download",
     "application/force-download",
+    "application/unknown",
+    "application/x-msdownload",
+    "application/x-secure-download",
+
     "binary/octet-stream",
+    "octet/stream",
     // Dropbox
     "application/binary",
     // S3 buckets might have files without Content-type set
