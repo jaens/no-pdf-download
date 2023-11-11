@@ -1,5 +1,6 @@
 {
     "name": "no-pdf-download",
+    "version": "2.1.2",
     "type": "module",
     "scripts": {
         "build": "web-ext build --overwrite-dest",
